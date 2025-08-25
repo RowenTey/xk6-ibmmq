@@ -1,6 +1,19 @@
-import { greeting } from "k6/x/ibmmq";
+import { Producer } from "k6/x/ibmmq";
+
+const producer = new Producer({
+  qmName: "QM1",
+  hostname: "localhost",
+  portNumber: "1414",
+  channelName: "DEV.ADMIN.SVRCONN",
+  username: "admin",
+  password: "passw0rd"
+})
 
 export default function () {
-  console.log(greeting()) // Hello, World!
-  console.log(greeting("Joe")) // Hello, Joe!
+  producer.send("TEST", "test")
+  producer.commit()
+}
+
+export function teardown(data) {
+  producer.close();
 }
