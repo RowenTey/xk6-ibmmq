@@ -1,4 +1,4 @@
-module github.com/grafana/xk6-example
+module github.com/RowenTey/xk6-ibmmq
 
 go 1.24.0
 
@@ -6,6 +6,7 @@ toolchain go1.24.4
 
 require (
 	github.com/grafana/sobek v0.0.0-20250320150027-203dc85b6d98
+	github.com/ibm-messaging/mq-golang-jms20 v1.13.1
 	github.com/stretchr/testify v1.10.0
 	go.k6.io/k6 v1.1.0
 )
@@ -23,6 +24,7 @@ require (
 	github.com/google/pprof v0.0.0-20230728192033-2ba5b33183c6 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 // indirect
+	github.com/ibm-messaging/mq-golang/v5 v5.6.4 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/mailru/easyjson v0.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect

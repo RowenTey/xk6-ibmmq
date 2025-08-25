@@ -76,6 +76,12 @@ github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 h1:UH//fgunKIs4JdUbpDl1VZCDa
 github.com/grpc-ecosystem/go-grpc-middleware v1.4.0/go.mod h1:g5qyo/la0ALbONm6Vbp88Yd8NsDy6rZz+RcrMPxvld8=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3 h1:5ZPtiqj0JL5oKWmcsq4VMaAW5ukBEgSGXEN89zeH1Jo=
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.3/go.mod h1:ndYquD05frm2vACXE1nsccT4oJzjhw2arTS2cpUD1PI=
+github.com/ibm-messaging/mq-golang-jms20 v1.13.1 h1:pwPrcDm65XU6DZVVdVYKabC+VtPZiIy1hpOPvIbzp9s=
+github.com/ibm-messaging/mq-golang-jms20 v1.13.1/go.mod h1:oyyrK++j5yVGOFEcDMrOKZ4tcJ+qTKTQ8a9xy/D0saE=
+github.com/ibm-messaging/mq-golang/v5 v5.6.0 h1:EvK6eEUzFu7E7R/jyoSr6cQFtWj8GsjAUzpaO936kjI=
+github.com/ibm-messaging/mq-golang/v5 v5.6.0/go.mod h1:xCV0vl1+ik3VyWZnwAj++2J89vSTzhXP1gXhG0X3IYE=
+github.com/ibm-messaging/mq-golang/v5 v5.6.4 h1:C7b0xUCXc+urjeoFfPmMn5Dq7J/yD5Hanqx2xacsQd8=
+github.com/ibm-messaging/mq-golang/v5 v5.6.4/go.mod h1:xCV0vl1+ik3VyWZnwAj++2J89vSTzhXP1gXhG0X3IYE=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
 github.com/influxdata/influxdb1-client v0.0.0-20190402204710-8ff2fc3824fc h1:KpMgaYJRieDkHZJWY3LMafvtqS/U8xX6+lUN+OKpl/Y=

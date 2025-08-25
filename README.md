@@ -1,4 +1,4 @@
-# xk6-example
+# xk6-ibmmq
 
 **Example k6 extension**
 
@@ -6,7 +6,7 @@ This k6 extension showcases how to develop a k6 JavaScript extension using simpl
 
 
 ```javascript file=script.js
-import { greeting } from "k6/x/example";
+import { greeting } from "k6/x/ibmmq";
 
 export default function () {
   console.log(greeting()) // Hello, World!
@@ -16,12 +16,12 @@ export default function () {
 
 ## Quick start
 
-1. **Create a GitHub repository**. This can be done interactively in a browser by clicking [here](https://github.com/new?template_name=xk6-example&template_owner=grafana).
+1. **Create a GitHub repository**. This can be done interactively in a browser by clicking [here](https://github.com/new?template_name=xk6-ibmmq&template_owner=grafana).
 
     Alternatively, use the [GitHub CLI](https://cli.github.com/) to create the repository.
 
     ```shell
-   gh repo create -p grafana/xk6-example -d "Experimental k6 extension" --public xk6-quickstart
+   gh repo create -p grafana/xk6-ibmmq -d "Experimental k6 extension" --public xk6-quickstart
     ```
 
 2. **Create a codespace**. Go to the repository you created in the previous step. Click the green **Code** button and then select **Codespaces** from the dropdown menu. Click **Create new codespace**.
@@ -63,11 +63,11 @@ To create a local development environment, you need an IDE that supports [Develo
 
 ## Download
 
-Building a custom k6 binary with the `xk6-example` extension is necessary for its use. You can download pre-built k6 binaries from the [Releases page](https://github.com/grafana/xk6-example/releases/).
+Building a custom k6 binary with the `xk6-ibmmq` extension is necessary for its use. You can download pre-built k6 binaries from the [Releases page](https://github.com/RowenTey/xk6-ibmmq/releases/).
 
 ## Build
 
-Use the [xk6](https://github.com/grafana/xk6) tool to build a custom k6 binary with the `xk6-example` extension. Refer to the [xk6 documentation](https://github.com/grafana/xk6) for more information.
+Use the [xk6](https://github.com/grafana/xk6) tool to build a custom k6 binary with the `xk6-ibmmq` extension. Refer to the [xk6 documentation](https://github.com/grafana/xk6) for more information.
 
 ## Contribute
 
