@@ -12,6 +12,7 @@
   },
 
   "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker": {},
     "ghcr.io/devcontainers/features/github-cli:1": { "version": "2.72.0" },
     "ghcr.io/devcontainers/features/go:1": {
       "version": "1.24",
@@ -31,6 +32,5 @@
     "GH_TOKEN": "${localEnv:GH_TOKEN}",
     "GITHUB_TOKEN": "${localEnv:GITHUB_TOKEN}"
   },
-
   "postStartCommand": "xk6 adjust --dev-container"
 }
