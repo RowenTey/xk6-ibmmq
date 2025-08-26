@@ -8,7 +8,6 @@ import (
 	"github.com/ibm-messaging/mq-golang-jms20/jms20subset"
 	"github.com/ibm-messaging/mq-golang-jms20/mqjms"
 	"go.k6.io/k6/js/common"
-	"go.k6.io/k6/js/modules"
 )
 
 var (
@@ -24,19 +23,15 @@ type ProducerConfig struct {
 	Password    string `json:"password"`    // MQ password
 }
 
-type Producer struct {
-	vu modules.VU
-}
-
 func (p *Ibmmq) ProducerJs(call sobek.ConstructorCall) *sobek.Object {
 	runtime := p.vu.Runtime()
 
-	var producerConfig *ProducerConfig
 	if len(call.Arguments) != 1 {
 		common.Throw(runtime, ErrNotEnoughArguments)
 	}
 
-	if params, ok := call.Argument(0).Export().(map[string]interface{}); ok {
+	var producerConfig *ProducerConfig
+	if params, ok := call.Argument(0).Export().(map[string]any); ok {
 		b, err := json.Marshal(params)
 		if err != nil {
 			common.Throw(runtime, err)
@@ -57,7 +52,7 @@ func (p *Ibmmq) ProducerJs(call sobek.ConstructorCall) *sobek.Object {
 
 	// Bind to JS methods
 	if err := producerObject.Set("send", func(call sobek.FunctionCall) sobek.Value {
-		if len(call.Arguments) != 2 {
+		if len(call.Arguments) < 2 || len(call.Arguments) > 3 {
 			common.Throw(runtime, ErrNotEnoughArguments)
 		}
 
@@ -71,7 +66,22 @@ func (p *Ibmmq) ProducerJs(call sobek.ConstructorCall) *sobek.Object {
 			common.Throw(runtime, errors.New("Missing json string message"))
 		}
 
-		if err := p.send(ctx, producer, queueName, jsonStrMsg); err != nil {
+		// Optional headers
+		var headers map[string]string
+		if len(call.Arguments) == 3 {
+			if param, ok := call.Argument(2).Export().(map[string]any); ok {
+				b, err := json.Marshal(param)
+				if err != nil {
+					common.Throw(runtime, errors.New("Headers must be a map[string]string"))
+				}
+
+				if err = json.Unmarshal(b, &headers); err != nil {
+					common.Throw(runtime, errors.New("Headers must be a map[string]string"))
+				}
+			}
+		}
+
+		if err := p.send(ctx, producer, queueName, jsonStrMsg, headers); err != nil {
 			common.Throw(runtime, err)
 		}
 
@@ -122,14 +132,15 @@ func (p *Ibmmq) producer(config *ProducerConfig) (jms20subset.JMSContext, jms20s
 	return ctx, producer
 }
 
-func (p *Ibmmq) send(ctx jms20subset.JMSContext, producer jms20subset.JMSProducer, queueName, msg string) jms20subset.JMSException {
-	return producer.Send(ctx.CreateQueue(queueName), ctx.CreateTextMessageWithString(msg))
-}
+func (p *Ibmmq) send(ctx jms20subset.JMSContext, producer jms20subset.JMSProducer, queueName, msg string, headers map[string]string) jms20subset.JMSException {
+	textMsg := ctx.CreateTextMessageWithString(msg)
 
-func (p *Ibmmq) commit(ctx jms20subset.JMSContext) jms20subset.JMSException {
-	return ctx.Commit()
-}
+	for key, value := range headers {
+		err := textMsg.SetStringProperty(key, &value)
+		if err != nil {
+			return err
+		}
+	}
 
-func (p *Ibmmq) close(ctx jms20subset.JMSContext) {
-	ctx.Close()
+	return producer.Send(ctx.CreateQueue(queueName), textMsg)
 }

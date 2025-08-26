@@ -53,6 +53,7 @@ func (*RootModule) NewModuleInstance(vu modules.VU) modules.Instance {
 	}
 
 	mustExport("Producer", moduleInstance.ProducerJs)
+	mustExport("Consumer", moduleInstance.ConsumerJs)
 
 	return moduleInstance
 }

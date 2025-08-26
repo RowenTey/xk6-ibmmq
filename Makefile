@@ -28,7 +28,7 @@ all: clean format lint security test build it doc readme makefile
 .PHONY: build
 build: 
 	@(\
-		xk6 build --with github.com/RowenTey/xk6-ibmmq=.;\
+		xk6 build -v --with github.com/RowenTey/xk6-ibmmq=. --cgo=1;\
 	)
 
 # Clean the working directory
