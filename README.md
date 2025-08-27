@@ -2,7 +2,7 @@
 
 **k6 extension to interact with IBM MQ**
 
-> NOTE: ❗  
+> [!WARNING]  
 > This extension is a proof of concept, isn't supported by the k6 team, and may break in the future. USE AT YOUR OWN RISK!
 
 This k6 extension provide users with the ability to extend k6 functionalities to IBM MQ by wrapping over [
