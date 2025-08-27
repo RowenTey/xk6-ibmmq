@@ -15,12 +15,16 @@ var (
 )
 
 type ProducerConfig struct {
-	QMName      string `json:"qmName"`      // Queue Manager name
-	Hostname    string `json:"hostname"`    // MQ host address
-	PortNumber  int    `json:"portNumber"`  // Listener port
-	ChannelName string `json:"channelName"` // SVRCONN channel
-	UserName    string `json:"userName"`    // MQ user ID
-	Password    string `json:"password"`    // MQ password
+	QMName        string `json:"qmName"`        // Queue Manager name
+	Hostname      string `json:"hostname"`      // MQ host address
+	PortNumber    int    `json:"portNumber"`    // Listener port
+	ChannelName   string `json:"channelName"`   // SVRCONN channel
+	UserName      string `json:"userName"`      // MQ user ID
+	Password      string `json:"password"`      // MQ password
+	TLSEnabled    bool   `json:"tlsEnabled"`    // Use bool for clarity
+	TLSCipherSpec string `json:"tlsCipherSpec"` // TLS cipher spec
+	KeyRepoPath   string `json:"keyRepoPath"`   // Path to .kdb (without extension)
+	CertLabel     string `json:"certLabel"`     // Label in .kdb
 }
 
 func (p *Ibmmq) ProducerJs(call sobek.ConstructorCall) *sobek.Object {
@@ -120,6 +124,13 @@ func (p *Ibmmq) producer(config *ProducerConfig) (jms20subset.JMSContext, jms20s
 		ChannelName: config.ChannelName,
 		UserName:    config.UserName,
 		Password:    config.Password,
+	}
+
+	if config.TLSEnabled {
+		cf.TLSClientAuth = mqjms.TLSClientAuth_REQUIRED
+		cf.TLSCipherSpec = config.TLSCipherSpec
+		cf.KeyRepository = config.KeyRepoPath
+		cf.CertificateLabel = config.CertLabel
 	}
 
 	ctx, err := cf.CreateContext()

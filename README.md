@@ -1,64 +1,105 @@
 # xk6-ibmmq
 
-**Example k6 extension**
+**k6 extension to interact with IBM MQ**
 
-This k6 extension showcases how to develop a k6 JavaScript extension using simple functions. It serves as the basis for new JavaScript extensions created with the `xk6 new` command. Additionally, this repository functions as a GitHub template for creating k6 extension repositories.
+> NOTE: ❗  
+> This extension is a proof of concept, isn't supported by the k6 team, and may break in the future. USE AT YOUR OWN RISK!
 
+This k6 extension provide users with the ability to extend k6 functionalities to IBM MQ by wrapping over [
+mq-golang-jms20](https://github.com/ibm-messaging/mq-golang-jms20).
 
 ```javascript file=script.js
-import { greeting } from "k6/x/ibmmq";
+import { Producer, Consumer } from "k6/x/ibmmq";
+
+const QUEUE_NAME = "TEST";
+
+const producer = new Producer({
+  qmName: "QM1",
+  hostname: "localhost",
+  portNumber: 1414,
+  channelName: "DEV.ADMIN.SVRCONN",
+  username: "admin",
+  password: "passw0rd",
+  tlsEnabled: true,
+  tlsCipherSpec: "TLS_RSA_WITH_AES_128_CBC_SHA256",
+  keyRepoPath: "./tls/client/mutual-tls",
+  certLabel: "client"
+});
+
+const consumer = new Consumer({
+  qmName: "QM1",
+  hostname: "localhost",
+  portNumber: 1414,
+  channelName: "DEV.ADMIN.SVRCONN",
+  queueName: QUEUE_NAME,
+  username: "admin",
+  password: "passw0rd",
+  timeout: 60,
+  msgLimit: 1,
+  tlsEnabled: true,
+  tlsCipherSpec: "TLS_RSA_WITH_AES_128_CBC_SHA256",
+  keyRepoPath: "./tls/client/mutual-tls",
+  certLabel: "client"
+});
 
 export default function () {
-  console.log(greeting()) // Hello, World!
-  console.log(greeting("Joe")) // Hello, Joe!
+  producer.send(QUEUE_NAME, "test", {"ibmmq": "loadtest"});
+  producer.commit();
+
+  let messages = consumer.consume();
+  consumer.commit();
+
+  console.log(messages);
+}
+
+export function teardown(data) {
+  producer.close();
+  consumer.close();
 }
 ```
 
-## Quick start
+## Quick Start
 
-1. **Create a GitHub repository**. This can be done interactively in a browser by clicking [here](https://github.com/new?template_name=xk6-ibmmq&template_owner=grafana).
+1. Refer to the [Getting Started](https://github.com/ibm-messaging/mq-golang-jms20?tab=readme-ov-file#getting-started) section in `mq-golang-jms20` repository for in-depth setup guide.
 
-    Alternatively, use the [GitHub CLI](https://cli.github.com/) to create the repository.
+2. For a quick start, run the below commands (inspired by Dockerfile in [openshift-app-sample](https://github.com/ibm-messaging/mq-golang-jms20/blob/main/openshift-app-sample/Dockerfile)):
 
-    ```shell
-   gh repo create -p grafana/xk6-ibmmq -d "Experimental k6 extension" --public xk6-quickstart
+    ```bash
+    # Require elevation to write to /opt
+    sudo su
+
+    mkdir -p /opt/mqm && chmod a+rx /opt/mqm
+
+    EXPORT genmqpkg_incnls=1 genmqpkg_incsdk=1 genmqpkg_inctls=1
+
+    # substitute 9.4.3.0 with another version if desired
+    cd /opt/mqm \
+        && curl -LO "https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/messaging/mqdev/redist/9.4.3.0-IBM-MQC-Redist-LinuxX64.tar.gz" \
+        && tar -zxf ./*.tar.gz \
+        && rm -f ./*.tar.gz \
+        && bin/genmqpkg.sh -b /opt/mqm
     ```
 
-2. **Create a codespace**. Go to the repository you created in the previous step. Click the green **Code** button and then select **Codespaces** from the dropdown menu. Click **Create new codespace**.
+3. Building the extension
 
-    Alternatively, use the [GitHub CLI](https://cli.github.com/) to create the codespace, replacing `USER` with your GitHub username:
+    ```bash
+    export CGO_ENABLED=1
+    export MQ_INSTALLATION_PATH="/opt/mqm"
+    export CGO_CFLAGS="-I/opt/mqm/inc"
+    export CGO_LDFLAGS_ALLOW="-Wl,-rpath.*"
+    export CGO_LDFLAGS="-L/opt/mqm/lib64 -Wl,-rpath,/opt/mqm/lib64"
 
-    ```shell
-    gh codespace create --repo USER/xk6-quickstart --web
+    xk6 build \
+        --with github.com/RowenTey/xk6-ibmmq=. \
+        --cgo=1
+    # OR
+    make build
     ```
 
-    Once the codespace is ready, it will open in your browser as a Visual Studio Code-like environment, letting you begin working on your project with the repository code already checked out.
+4. Running the sample script
 
-3. Run the test script. The repository's root directory includes a `script.js` file. When developing k6 extensions, use the `xk6 run` command instead of `k6 run` to execute your scripts.
-
-    ```shell
-    xk6 run script.js
-    ```
-
-## Development environment
-
-While using a GitHub codespace in the browser is a good starting point, you can also set up a local development environment for a better developer experience.
-
-To create a local development environment, you need an IDE that supports [Development Containers](https://containers.dev/). [Visual Studio Code](https://code.visualstudio.com/) supports Development Containers after installing the [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-
-1. First, clone the `xk6-quickstart` repository to your machine and open it in Visual Studio Code. Make sure to replace `USER` with your GitHub username:
-
-   ```shell
-   git clone https://github.com/USER/xk6-quickstart.git
-   code xk6-quickstart
-   ```
-
-2. Visual Studio Code will detect the [development container](https://containers.dev/) configuration and show a pop-up to open the project in a dev container. Accept the prompt and the project opens in the dev container, and the container image is rebuilt if necessary.
-
-3. Run the test script. The repository's root directory includes a `script.js` file. When developing k6 extensions, use the `xk6 run` command instead of `k6 run` to execute your scripts.
-
-    ```shell
-    xk6 run script.js
+    ```bash
+    ./k6 run script.js
     ```
 
 ## Download
@@ -72,3 +113,25 @@ Use the [xk6](https://github.com/grafana/xk6) tool to build a custom k6 binary w
 ## Contribute
 
 If you wish to contribute to this project, please start by reading the [Contributing Guidelines](CONTRIBUTING.md).
+
+## Generating certs for TLS
+
+The `gsk8capicmd` command is included in the IBM MQ redistributable client installation in the `./gskit8/bin` directory.
+
+```bash
+# Set gskit8 binary in path
+export PATH=/opt/mqm/gskit8/bin:$PATH
+export LD_LIBRARY_PATH=/opt/mqm/gskit8/lib64:$LD_LIBRARY_PATH
+
+# Create client keystore
+gsk8capicmd_64 -keydb -create -db mutual-tls.kdb -pw password -type kdb -expire 0 -stash
+
+# Import server CA
+gsk8capicmd_64 -cert -add -db mutual-tls.kdb -file ca.crt -label ServerCertRootCA -stashed -type kdb -format ascii
+
+# Generate keypair
+gsk8capicmd_64 -cert -create -db mutual-tls.kdb -pw password -label client -size 2048 -sig_alg SHA256WithRSA -dn "CN=client" -expire 365
+
+# Extract cert
+gsk8capicmd_64 -cert -extract -db mutual-tls.kdb -pw password -label client -target client.crt -format ascii
+```

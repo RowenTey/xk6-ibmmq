@@ -8,7 +8,11 @@ const producer = new Producer({
   portNumber: 1414,
   channelName: "DEV.ADMIN.SVRCONN",
   username: "admin",
-  password: "passw0rd"
+  password: "passw0rd",
+  tlsEnabled: true,
+  tlsCipherSpec: "TLS_RSA_WITH_AES_128_CBC_SHA256",
+  keyRepoPath: "./tls/client/mutual-tls",
+  certLabel: "client"
 });
 
 const consumer = new Consumer({
@@ -20,7 +24,11 @@ const consumer = new Consumer({
   username: "admin",
   password: "passw0rd",
   timeout: 60,
-  msgLimit: 1
+  msgLimit: 1,
+  tlsEnabled: true,
+  tlsCipherSpec: "TLS_RSA_WITH_AES_128_CBC_SHA256",
+  keyRepoPath: "./tls/client/mutual-tls",
+  certLabel: "client"
 });
 
 export default function () {

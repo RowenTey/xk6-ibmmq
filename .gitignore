@@ -4,3 +4,5 @@ xk6
 xk6.exe
 /build
 coverage.txt
+*.crl
+*.rdb

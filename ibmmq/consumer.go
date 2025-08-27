@@ -11,15 +11,19 @@ import (
 )
 
 type ConsumerConfig struct {
-	QMName      string `json:"qmName"`      // Queue Manager name
-	Hostname    string `json:"hostname"`    // MQ host address
-	PortNumber  int    `json:"portNumber"`  // Listener port
-	ChannelName string `json:"channelName"` // SVRCONN channel
-	QueueName   string `json:"queueName"`   // Queue name
-	UserName    string `json:"userName"`    // MQ user ID
-	Password    string `json:"password"`    // MQ password
-	Timeout     int32  `json:"timeout"`     // Consumer receive timeout
-	MsgLimit    int    `json:"msgLimit"`    // Number of messages to consume
+	QMName        string `json:"qmName"`        // Queue Manager name
+	Hostname      string `json:"hostname"`      // MQ host address
+	PortNumber    int    `json:"portNumber"`    // Listener port
+	ChannelName   string `json:"channelName"`   // SVRCONN channel
+	QueueName     string `json:"queueName"`     // Queue name
+	UserName      string `json:"userName"`      // MQ user ID
+	Password      string `json:"password"`      // MQ password
+	Timeout       int32  `json:"timeout"`       // Consumer receive timeout
+	MsgLimit      int    `json:"msgLimit"`      // Number of messages to consume
+	TLSEnabled    bool   `json:"tlsEnabled"`    // Use bool for clarity
+	TLSCipherSpec string `json:"tlsCipherSpec"` // TLS cipher spec
+	KeyRepoPath   string `json:"keyRepoPath"`   // Path to .kdb (without extension)
+	CertLabel     string `json:"certLabel"`     // Label in .kdb
 }
 
 func (c *Ibmmq) ConsumerJs(call sobek.ConstructorCall) *sobek.Object {
@@ -93,6 +97,13 @@ func (c *Ibmmq) consumer(config *ConsumerConfig) (jms20subset.JMSContext, jms20s
 		ChannelName: config.ChannelName,
 		UserName:    config.UserName,
 		Password:    config.Password,
+	}
+
+	if config.TLSEnabled {
+		cf.TLSClientAuth = mqjms.TLSClientAuth_REQUIRED
+		cf.TLSCipherSpec = config.TLSCipherSpec
+		cf.KeyRepository = config.KeyRepoPath
+		cf.CertificateLabel = config.CertLabel
 	}
 
 	ctx, err := cf.CreateContext()
